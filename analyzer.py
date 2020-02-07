@@ -101,5 +101,3 @@ print("Keys: Values")
   
 for i in high: 
     print(i[0]," :",i[1]," ")   
-
-#run ngram analysis
