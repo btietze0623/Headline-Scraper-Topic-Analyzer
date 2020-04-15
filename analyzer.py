@@ -1,14 +1,16 @@
 import pandas as pd
-import re, string, unicodedata
-import nltk
+import re, string, unicodedata, nltk
 from bs4 import BeautifulSoup
 from nltk import word_tokenize, sent_tokenize
-nltk.download('punkt')
 from nltk.corpus import stopwords
+nltk.download('punkt')
+from nltk.util import ngrams
 from nltk.stem import LancasterStemmer, WordNetLemmatizer
+from collections import Counter
+from sklearn.feature_extraction.text import TfidfVectorizer
 #from articles import articles
 
-#update the below file name for whatever data file you want to analyze
+
 df = pd.read_csv("CombinedHeadlines.csv")
 print(df.shape)
 
@@ -47,8 +49,6 @@ def stem_and_lemmatize(words):
     lemmas = lemmatize_verbs(words)
     return lemmas
 
-print(stem_and_lemmatize(['run', 'ran', 'running']))
-
 #tokenize and normalize (lower case) all the headlines
 headline_tokenized = []
 for i in headline_list:
@@ -59,45 +59,53 @@ for i in headline_list:
   headline_stripped = headline_remove3.strip()
   headline_tokenized.append(nltk.word_tokenize(headline_stripped))
 
-#build a giant list into a list of all individual words used
+#Build a list of all words used
 headline_pre_lem = []
 for i in headline_tokenized:
   for j in i:
     headline_pre_lem.append(j)
 
-print(headline_pre_lem)
-
 #now lemmatize
 headline_lemmatized = lemmatize_verbs(headline_pre_lem)
-print(headline_lemmatized)
 
 # Update stop_list:
-stop_list = [";","the","&","amp","apos","to","be","a","in","of"," ","s","and",":","for","on","  ","'s","as","have","with","from","at","after","us","will","his","new","'","it","that"]
+stop_list = [";","an", "a","the","&","amp","apos","to","be","a","in","of"," ","s","and",":","for","on","  ","'s","as","have","with","from","at","after","us","will","his","new","'","it","that"]
 # filtering topics for stop words
-def filter_out_stop_words(corpus):
-  no_stops_corpus = []
-  for chapter in corpus:
-    no_stops_chapter = " ".join([word for word in chapter.split(" ") if word not in stop_list])
-    no_stops_corpus.append(no_stops_chapter)
-  return no_stops_corpus
+#words = word_tokenize(data)
+list_filtered = []
 
-filtered_for_stops = filter_out_stop_words(headline_lemmatized)
+for w in headline_lemmatized:
+    if w not in stop_list:
+        list_filtered.append(w)
 
-#Run bag of words analysis to see most highly cited words
-wordfreq = {}
-for token in filtered_for_stops:
-    if token not in wordfreq.keys():
-        wordfreq[token] = 1
-    else:
-        wordfreq[token] += 1
+clean_data_set = list_filtered
 
-#Count most frequent uses
-from collections import Counter
-k = Counter(wordfreq) 
-high = k.most_common(20)
-print(high)
-print("Dictionary with 20 highest values:") 
-print("Keys: Values") 
-  
-for i in high: 
-    print(i[0]," :",i[1]," ")   
+#run ngram analysis (n of 1 is bag of words analysis)
+ngram_n = 3
+print_line_ngram = "n-gram analysis: n of {}".format(ngram_n)
+print(print_line_ngram)
+ngram_list = ngrams(clean_data_set,ngram_n)
+print(ngram_list)
+print(Counter(ngram_list).most_common(20))
+
+"""
+#TF-IDF Analysis - I initially started on a TF-IDF analysis, and if you uncomment the below portion you can see the tf-idf scores, though the formatting is a little off. I didn't fix formatting, because you can immeidately see that most words have a high tf-idf score, which indicates most words are important, which is not the case here
+# corpus of processed words
+processed_corpus = clean_data_set
+
+# initialize and fit TfidfVectorizer; the below gives all tf_idf scores for the words in vector format
+vectorizer = TfidfVectorizer(norm=None)
+tf_idf_scores = vectorizer.fit_transform(processed_corpus)
+#df_tfidf = pd.DataFrame(tf_idf_scores, index = processed_corpus, columns)
+print("TF IDF")
+print(tf_idf_scores)
+print("TF Only")
+print(tf_idf_scores[1])
+print("Vector")
+print(tf_idf_scores[0])
+
+df_words = pd.DataFrame(tf_idf_scores, index = processed_corpus, columns =['Vector']) 
+df_Vscores = pd.DataFrame(processed_corpus, index = processed_corpus, columns = len(tf_idf_scores)) 
+print
+print("user table")
+print(df_vF)
