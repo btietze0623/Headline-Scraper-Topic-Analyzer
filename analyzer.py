@@ -8,7 +8,6 @@ from nltk.util import ngrams
 from nltk.stem import LancasterStemmer, WordNetLemmatizer
 from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
-#from articles import articles
 
 
 df = pd.read_csv("CombinedHeadlines.csv")
