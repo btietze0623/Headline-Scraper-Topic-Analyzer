@@ -85,25 +85,3 @@ print(print_line_ngram)
 ngram_list = ngrams(clean_data_set,ngram_n)
 print(ngram_list)
 print(Counter(ngram_list).most_common(20))
-
-"""
-#TF-IDF Analysis - I initially started on a TF-IDF analysis, and if you uncomment the below portion you can see the tf-idf scores, though the formatting is a little off. I didn't fix formatting, because you can immeidately see that most words have a high tf-idf score, which indicates most words are important, which is not the case here
-# corpus of processed words
-processed_corpus = clean_data_set
-
-# initialize and fit TfidfVectorizer; the below gives all tf_idf scores for the words in vector format
-vectorizer = TfidfVectorizer(norm=None)
-tf_idf_scores = vectorizer.fit_transform(processed_corpus)
-#df_tfidf = pd.DataFrame(tf_idf_scores, index = processed_corpus, columns)
-print("TF IDF")
-print(tf_idf_scores)
-print("TF Only")
-print(tf_idf_scores[1])
-print("Vector")
-print(tf_idf_scores[0])
-
-df_words = pd.DataFrame(tf_idf_scores, index = processed_corpus, columns =['Vector']) 
-df_Vscores = pd.DataFrame(processed_corpus, index = processed_corpus, columns = len(tf_idf_scores)) 
-print
-print("user table")
-print(df_vF)
