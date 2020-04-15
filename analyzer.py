@@ -70,7 +70,6 @@ headline_lemmatized = lemmatize_verbs(headline_pre_lem)
 # Update stop_list:
 stop_list = [";","an", "a","the","&","amp","apos","to","be","a","in","of"," ","s","and",":","for","on","  ","'s","as","have","with","from","at","after","us","will","his","new","'","it","that"]
 # filtering topics for stop words
-#words = word_tokenize(data)
 list_filtered = []
 
 for w in headline_lemmatized:
