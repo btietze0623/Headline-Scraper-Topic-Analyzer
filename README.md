@@ -26,6 +26,32 @@ for i in lines:
 
 Next I'm going to have to preprocess my list of headlines. I'm going to want to steam or lemmatize and normalize the headline list. In this case I have defined both stemming and lemmatization and a combined function, but I am only going to be using the lemmatizate function.
 
+```
+#stem and lemmatize functions
+def stem_words(words):
+    #Stem words in list of tokenized words
+    stemmer = LancasterStemmer()
+    stems = []
+    for word in words:
+        stem = stemmer.stem(word)
+        stems.append(stem)
+    return stems
+
+def lemmatize_verbs(words):
+    #Lemmatize verbs in list of tokenized words
+    lemmatizer = WordNetLemmatizer()
+    lemmas = []
+    for word in words:
+        lemma = lemmatizer.lemmatize(word, pos='v')
+        lemmas.append(lemma)
+    return lemmas
+
+def stem_and_lemmatize(words):
+    stems = stem_words(words)
+    lemmas = lemmatize_verbs(words)
+    return lemmas
+```
+
 Doing some sort of stemming or lemmatizing is critical because words may have different tenses (run, ran, running; car, care, caring) and I'm trying to convert all headlines into single words or topics so that I can eventually run a count to see which are most common in my dataset. Lemmatizing is usually more sophistocated than stemming. Take this example: If you stem the word 'Caring', it will return 'Car', which is incorrect. However, if you use lemmatizing, it will return 'care'.
 
 Now I'm going to normalize my headlines, by stripping extra spaces, turning everything lowercase, making the words more uniform. I'm calling the lemmatize function here. I'm also including stop words here, which will exclude words or characters that I choose from the tokenized dataset. My final processed dataset is clean_data_set.
@@ -73,22 +99,3 @@ ngram_list = ngrams(clean_data_set,ngram_n)
 print(ngram_list)
 print(Counter(ngram_list).most_common(20))
 ```
-
-## TF-IDF Analysis
-
-```
-"""
-#TF-IDF Analysis - I initially started on a TF-IDF analysis, and if you uncomment the below portion you can see the tf-idf scores, though the formatting is a little off. I didn't fix formatting, because you can immeidately see that most words have a high tf-idf score, which indicates most words are important, which is not the case here
-#corpus of processed words
-processed_corpus = clean_data_set
-
-#initialize and fit TfidfVectorizer; the below gives all tf_idf scores for the words in vector format
-vectorizer = TfidfVectorizer(norm=None)
-tf_idf_scores = vectorizer.fit_transform(processed_corpus)
-#df_tfidf = pd.DataFrame(tf_idf_scores, index = processed_corpus, columns)
-
-df_words = pd.DataFrame(tf_idf_scores, index = processed_corpus, columns =['Vector']) 
-df_Vscores = pd.DataFrame(processed_corpus, index = processed_corpus, columns = len(tf_idf_scores)) 
-print
-print("user table")
-print(df_vF)
